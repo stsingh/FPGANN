@@ -42,20 +42,20 @@ module network #(
     logic [7:0] bram_raddr;
     logic [7:0] bram_waddr;
     
-    integer k;
-    always_comb begin
-        label = {10{8'h0}};
-        label[label_val] = 8'b00100000;
-        for (k = 0; k < CLASSES; k++)
-            error[k] = ideal[k] - result[k];
-    end
+    // integer k;
+    // always_comb begin
+    //     label = {10{8'h0}};
+    //     label[label_val] = 8'b00100000;
+    //     for (k = 0; k < CLASSES; k++)
+    //         error[k] = ideal[k] - result[k];
+    // end
 
     // Calculate error
     integer j;
     always_comb begin
         ideal = {CLASSES{8'h0}};
         for(j = 0; j < CLASSES; j++) begin
-            if(label[j] == 1'b1) begin
+            if(label_val[j] == 1'b1) begin
                 ideal[j] = 8'b00100000;
             end
         end
@@ -213,11 +213,11 @@ module network #(
     enum logic [2:0] {
         backprop_idle, // idle state
         backprop_update, // update weights
-        backprop_getdata, // 
-        backprop_clk1,
-        backprop_clk2,
-        backprop_delta, 
-        backprop_delay,
+        backprop_getdata, // start getting data
+        backprop_clk1, // wait state for first memory access
+        backprop_clk2, // ||
+        backprop_delta,  // calculate delta using mask above
+        backprop_delay, // delay for memory accesses
         backprop_done_s
     } backprop_curr_s, backprop_next_s;
 
